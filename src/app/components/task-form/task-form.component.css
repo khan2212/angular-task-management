@@ -1,0 +1,40 @@
+
+
+
+form {
+  max-width: 600px;
+  display: grid;
+  gap: 16px;
+}
+
+form div {
+  display: grid;
+  gap: 6px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font: inherit;
+}
+
+textarea {
+  min-height: 90px;
+}
+
+button {
+  width: fit-content;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 13px;
+}

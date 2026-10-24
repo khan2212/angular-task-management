@@ -1,0 +1,63 @@
+
+<h2>{{ isEditMode ? 'Edit Task' : 'Create Task' }}</h2>
+
+@if (isLoading) {
+  <p>Loading or saving task...</p>
+}
+
+@if (errorMessage) {
+  <p role="alert">{{ errorMessage }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="title">Title *</label>
+    <input id="title" type="text" formControlName="title" />
+
+    @if (form.controls['title'].touched && form.controls['title'].hasError('required')) {
+      <p class="error">Title is required.</p>
+    }
+
+    @if (form.controls['title'].touched && form.controls['title'].hasError('minlength')) {
+      <p class="error">Title must contain at least 3 characters.</p>
+    }
+  </div>
+
+  <div>
+    <label for="description">Description</label>
+    <textarea id="description" formControlName="description"></textarea>
+  </div>
+
+  <div>
+    <label for="status">Status *</label>
+    <select id="status" formControlName="status">
+      <option value="todo">To Do</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="priority">Priority *</label>
+    <select id="priority" formControlName="priority">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="dueDate">Due Date *</label>
+    <input id="dueDate" type="date" formControlName="dueDate" />
+
+    @if (form.controls['dueDate'].touched && form.controls['dueDate'].hasError('required')) {
+      <p class="error">Due date is required.</p>
+    }
+  </div>
+
+  <button type="submit" [disabled]="isLoading">
+    {{ isEditMode ? 'Update Task' : 'Create Task' }}
+  </button>
+
+  <button type="button" (click)="cancel()">Cancel</button>
+</form>

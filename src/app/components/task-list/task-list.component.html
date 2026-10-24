@@ -1,0 +1,212 @@
+
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1>Task Management</h1>
+    </div>
+
+    <button class="btn btn-primary" (click)="openCreateTask()">
+      <span class="plus-icon">+</span> Create Task
+    </button>
+  </header>
+
+  @if (successMessage) {
+    <div class="alert alert-success" role="status">
+      <span class="alert-icon">✓</span>
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-error" role="alert">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total Tasks</span>
+        <span class="stat-icon icon-blue">▤</span>
+      </div>
+      <h2>{{ totalTasks }}</h2>
+      <p>All tasks in your workspace</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Completed</span>
+        <span class="stat-icon icon-green">✓</span>
+      </div>
+      <h2>{{ completedTasks }}</h2>
+      <p>Successfully finished</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">In Progress</span>
+        <span class="stat-icon icon-purple">◷</span>
+      </div>
+      <h2>{{ inProgressTasks }}</h2>
+      <p>Currently being worked on</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Overdue</span>
+        <span class="stat-icon icon-red">!</span>
+      </div>
+      <h2>{{ overdueTasks }}</h2>
+      <p>Past their due date</p>
+    </article>
+  </section>
+
+  <section class="tasks-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Your Tasks</h2>
+        <p>Search, filter and manage your tasks.</p>
+      </div>
+      <span class="task-count">{{ filteredTasks.length }} tasks</span>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          aria-label="Search tasks by title"
+          placeholder="Search tasks by title..."
+          [(ngModel)]="searchText"
+        />
+      </div>
+
+      <select
+        aria-label="Filter by status"
+        [(ngModel)]="selectedStatus"
+      >
+        <option value="">All statuses</option>
+        <option value="todo">To Do</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+
+      <select
+        aria-label="Filter by priority"
+        [(ngModel)]="selectedPriority"
+      >
+        <option value="">All priorities</option>
+        <option value="low">Low Priority</option>
+        <option value="medium">Medium Priority</option>
+        <option value="high">High Priority</option>
+      </select>
+    </div>
+
+    @if (isLoading) {
+      <div class="state-message">
+        <div class="loader"></div>
+        <p>Loading your tasks...</p>
+      </div>
+    } @else if (filteredTasks.length === 0) {
+      <div class="state-message empty-state">
+        <div class="empty-icon">▤</div>
+        <h3>No tasks found</h3>
+        <p>Try changing your search or filters, or create a new task.</p>
+        <button class="btn btn-primary" (click)="openCreateTask()">
+          Create your first task
+        </button>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (task of filteredTasks; track task.id) {
+              <tr>
+                <td>
+                  <div class="task-title">{{ task.title }}</div>
+                  <div class="task-description">
+                    {{ task.description || 'No description provided' }}
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-todo]="task.status === 'todo'"
+                    [class.status-progress]="task.status === 'in-progress'"
+                    [class.status-completed]="task.status === 'completed'"
+                  >
+                    @if (task.status === 'todo') {
+                      To Do
+                    } @else if (task.status === 'in-progress') {
+                      In Progress
+                    } @else {
+                      Completed
+                    }
+                  </span>
+                </td>
+
+                <td>
+                  <span
+                    class="priority-badge"
+                    [class.priority-low]="task.priority === 'low'"
+                    [class.priority-medium]="task.priority === 'medium'"
+                    [class.priority-high]="task.priority === 'high'"
+                  >
+                    <span class="priority-dot"></span>
+                    {{ task.priority }}
+                  </span>
+                </td>
+
+                <td>
+                  <div
+                    class="due-date"
+                    [class.overdue-date]="isOverdue(task)"
+                  >
+                    {{ task.dueDate }}
+                  </div>
+                  @if (isOverdue(task)) {
+                    <span class="overdue-label">Overdue</span>
+                  }
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn btn-edit"
+                      (click)="editTask(task.id)"
+                      [attr.aria-label]="'Edit ' + task.title"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-delete"
+                      (click)="confirmDelete(task.id)"
+                      [attr.aria-label]="'Delete ' + task.title"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+</div>
